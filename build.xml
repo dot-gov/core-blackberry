@@ -409,19 +409,20 @@
 				<libbuild version="@{version}" preprocess.symbols="${preprocess.release.symbols}" />
 
 				<echo message="_____________" />
-				<echo message="     DEBUG   " />
-				<corebuild kind="debug" version="@{version}" preprocess.symbols="${preprocess.debug.symbols}" />
-
-
-				<echo message="_____________" />
 				<echo message="    RELEASE  " />
 				<corebuild kind="release" version="@{version}" preprocess.symbols="${preprocess.release.symbols}" />
 
+        <!--
+        
+        <echo message="_____________" />
+				<echo message="     DEBUG   " />
+				<corebuild kind="debug" version="@{version}" preprocess.symbols="${preprocess.debug.symbols}" />
+        
 				<echo message="_____________" />
 				<echo message="    NODEMO  " />
 				<corebuild kind="nodemo" version="@{version}" preprocess.symbols="${preprocess.nodemo.symbols}" />
 
-				<!--
+				
 				<echo message="_____________" />
 				<echo message="   FAKECONF    " />
 				<corebuild kind="fakeconf" version="@{version}" preprocess.symbols="${preprocess.fakeconf.symbols}" />
