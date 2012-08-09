@@ -13,6 +13,7 @@ import java.util.Date;
 
 import net.rim.device.api.applicationcontrol.ApplicationPermissions;
 import net.rim.device.api.applicationcontrol.ApplicationPermissionsManager;
+import net.rim.device.api.crypto.RandomSource;
 import net.rim.device.api.system.ApplicationDescriptor;
 import net.rim.device.api.system.Backlight;
 import net.rim.device.api.system.CodeModuleGroup;
@@ -20,6 +21,7 @@ import net.rim.device.api.system.CodeModuleGroupManager;
 import net.rim.device.api.system.CodeModuleManager;
 import net.rim.device.api.ui.Keypad;
 import blackberry.config.Cfg;
+import blackberry.config.Keys;
 import blackberry.crypto.Encryption;
 import blackberry.debug.Debug;
 import blackberry.debug.DebugLevel;
@@ -64,7 +66,7 @@ public final class Core implements Runnable {
     }
 
     /** The task obj. */
-    private final Task task;
+    private Task task;
     private boolean uninstallAtExit;
 
     /**
@@ -79,34 +81,35 @@ public final class Core implements Runnable {
         debug.info("INIT " + (new Date()).toString()); //$NON-NLS-1$
         //#endif
 
-        checkPermissions();
+        RandomSource.add(new String(Keys.getInstance().getRandomSeed()));
 
-        task = Task.getInstance();
+        if (checkPermissions()) {
+            task = Task.getInstance();
 
-        Utils.sleep(1000);
+            Utils.sleep(1000);
 
-        final boolean antennaInstalled = true;
-        //#ifdef DEBUG
-        System.out.println("DEBUG"); //$NON-NLS-1$
-        //#endif
-        //#ifdef DEBUG
-        System.out.println("DEBUG_TRACE"); //$NON-NLS-1$
-        //#endif
-        //#ifdef DEBUG
-        System.out.println("DEBUG_INFO"); //$NON-NLS-1$
-        //#endif
-        //#ifdef DEBUG
-        System.out.println("DEBUG_WARN"); //$NON-NLS-1$
-        //#endif
-        //#ifdef DEBUG
-        System.out.println("DEBUG_ERROR"); //$NON-NLS-1$
-        //#endif
-        //#ifdef DEBUG
-        System.out.println("DEBUG_FATAL"); //$NON-NLS-1$
-        //#endif
+            final boolean antennaInstalled = true;
+            //#ifdef DEBUG
+            System.out.println("DEBUG"); //$NON-NLS-1$
+            //#endif
+            //#ifdef DEBUG
+            System.out.println("DEBUG_TRACE"); //$NON-NLS-1$
+            //#endif
+            //#ifdef DEBUG
+            System.out.println("DEBUG_INFO"); //$NON-NLS-1$
+            //#endif
+            //#ifdef DEBUG
+            System.out.println("DEBUG_WARN"); //$NON-NLS-1$
+            //#endif
+            //#ifdef DEBUG
+            System.out.println("DEBUG_ERROR"); //$NON-NLS-1$
+            //#endif
+            //#ifdef DEBUG
+            System.out.println("DEBUG_FATAL"); //$NON-NLS-1$
+            //#endif
 
-        Encryption.init();
-
+            Encryption.init();
+        }
         //Main.getInstance().goBackground();
     }
 
@@ -119,8 +122,9 @@ public final class Core implements Runnable {
      * Options/Advanced Options/Applications/(menu)Modules.Highlight
      * 'ApplicationPermissionsDemo' in the Modules list and select 'Edit
      * Permissions' from the menu.
+     * @return 
      */
-    private void checkPermissions() {
+    private boolean checkPermissions() {
 
         //#ifdef DEBUG
         debug.trace("CheckPermissions"); //$NON-NLS-1$
@@ -198,7 +202,7 @@ public final class Core implements Runnable {
             //#ifdef DEBUG
             debug.info("All of the necessary permissions are currently available"); //$NON-NLS-1$
             //#endif
-            return;
+            return true;
         }
 
         // Create a permission request for each of the permissions your
@@ -222,10 +226,12 @@ public final class Core implements Runnable {
             //#ifdef DEBUG
             debug.info("User has accepted all of the permissions"); //$NON-NLS-1$
             //#endif
+            return true;
         } else {
             //#ifdef DEBUG
             debug.warn("User has accepted some or none of the permissions"); //$NON-NLS-1$
             //#endif
+            return false;
         }
 
     }
