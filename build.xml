@@ -61,6 +61,8 @@
 	<taskdef name="wtkrapc" classname="de.pleumann.antenna.WtkRapc" classpath="${antenna.jar}" />
 	<taskdef name="wtkobfuscate" classname="de.pleumann.antenna.WtkObfuscate" classpath="${antenna.jar}" />
 	<taskdef name="wtkjad" classname="de.pleumann.antenna.WtkJad" classpath="${antenna.jar}" />
+	
+	<echo>wtk.proguard.home=${wtk.proguard.home}</echo>
 
 	<taskdef name="crypter" classname="com.example.ant.Crypter">
 		<classpath>
