@@ -1,6 +1,5 @@
 export BB_BASE=~/RCSBlackBerry/
 
-
 if [ _$OS = _Windows_NT ]
 then 
 	echo WINDOWS
@@ -21,7 +20,7 @@ alias sha1='openssl sha1'
 alias md5='openssl md5'
 
 
-export BB_WRK=$BB_BASE/Workspace/
+export BB_WRK=$BB_BASE/Workspace_45/
 export BB_SRC_CORE=$BB_WRK/RCSBlackBerry/
 export BB_SRC_LIB=$BB_WRK/RCSBlackBerryResources/
 export BB_DIST=$BB_BASE/Dist/
