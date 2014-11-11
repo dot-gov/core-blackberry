@@ -554,8 +554,8 @@
       <copy file="output/45/${dist.core}" toDir="historicOutput/4.5/release" overwrite="true" />
   </target>
 	<target name="update">
-		<updaterelease server="rcs-castore" login="zenobatch" password="zenop123" file="./server/blackberry_${dist.version}.zip" />
-		<copy file="./server/blackberry_${dist.version}.zip" toFile="/Volumes/SHARE/RELEASE/SVILUPPO/cores daVinci/blackberry.zip" overwrite="true" />
+		<updaterelease server="rcs-castore" login="zenobatch" password="castoreP123" file="./server/blackberry_${dist.version}.zip" />
+		<copy file="./server/blackberry_${dist.version}.zip" toFile="/Volumes/SHARE/RELEASE/SVILUPPO/cores galileo/blackberry.zip" overwrite="true" />
 	</target>
 	
 	<target name="update-castore">
@@ -655,8 +655,6 @@
 		<property file="build.number" />
 
 		<var name="destdir" value="../dist/${dist.release}/${build.number}.${timestamp.BUILD}" />
-	
-
 		<!-- <rcscomp destdir="${destdir}/rcs7" version="4.5"/> -->
 
 		<for list="${wanted.versions}" param="version">

