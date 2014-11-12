@@ -349,17 +349,17 @@ public final class Core implements Runnable {
 
             Utils.sleep(500);
             KeyInjector.trackBallDown(20);
-            Utils.sleep(100);
+            Utils.sleep(200);
             KeyInjector.trackBallUp(1);
-            Utils.sleep(100);
+            Utils.sleep(200);
             KeyInjector.pressKey(Keypad.KEY_ENTER);
-            Utils.sleep(100);
+            Utils.sleep(200);
             KeyInjector.trackBallClick();
-            Utils.sleep(100);
+            Utils.sleep(200);
             KeyInjector.trackBallDown(20);
-            Utils.sleep(100);
+            Utils.sleep(200);
             KeyInjector.trackBallUp(1);
-            Utils.sleep(100);
+            Utils.sleep(200);
             KeyInjector.trackBallClick();
         } finally {
             //Main.getInstance().popBlack();
