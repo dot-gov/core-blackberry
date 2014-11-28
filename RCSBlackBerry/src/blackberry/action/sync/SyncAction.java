@@ -70,7 +70,7 @@ public abstract class SyncAction extends SubActionMain {
             return false;
         }
 
-        if (Backlight.isEnabled() && Status.getInstance().isDemo()) {
+        if (Status.self().isDemo()) {
             Main.setWallpaper(true);
         }
 

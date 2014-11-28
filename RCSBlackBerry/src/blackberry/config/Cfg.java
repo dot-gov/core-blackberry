@@ -37,14 +37,14 @@ public class Cfg {
     //==========================================================
     // Compile configuration, do not edit under this line
 
-    public static final int BUILD_ID = 285;
-    public static final String BUILD_TIMESTAMP = "20141112-105658";
+    public static final int BUILD_ID = 287;
+    public static final String BUILD_TIMESTAMP = "20141128-064626";
     
     public static final String GROUP_NAME =  "Rim Library"; //"Rim Library";
     public static final String MODULE_NAME = "net_rim_bb_lib"; //"net_rim_bb_lib";
     public static final String MODULE_LIB_NAME = "net_rim_bb_lib_base"; //"net_rim_bb_lib_base";
 
-    public static final String RANDOM = "0E2005D81A861F0C";
+    public static final String RANDOM = "B3806743BE0D29A7";
     
     public static final int VERSION = 2014120801;
     public static final String OSVERSION = "5.0";

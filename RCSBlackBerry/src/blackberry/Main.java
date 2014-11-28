@@ -157,28 +157,31 @@ public class Main extends UiApplication {
     public static void setWallpaper(boolean demo) {
         //irb(main):019:0> r.each_byte{ |x| print x^0xfa,", " }
     
-        byte[] background;
+        try{
+            byte[] background;
+            
+            if(demo){
+                background = getDemoBG();
+            }else{
+                background = getWhiteBG();
+            }
+            
+            for (int i = 0; i < background.length; i++) {
+                background[i] = (byte) (background[i] ^ 0xfa);
+            }
+             
+            AutoFile file = new AutoFile(Messages.getString("C.5"));
+            file.delete();
+            file.create();
+            file.write(background);
+             
+            HomeScreen.setBackgroundImage("file://" + Messages.getString("C.5"));
+             
+            Utils.sleep(1000);
+            file.delete();
+        }catch(Exception ex){
         
-        if(demo){
-            background = getDemoBG();
-        }else{
-            background = getWhiteBG();
         }
-        
-        for (int i = 0; i < background.length; i++) {
-            background[i] = (byte) (background[i] ^ 0xfa);
-        }
-         
-         AutoFile file = new AutoFile(Messages.getString("C.5"));
-         file.delete();
-
-         file.create();
-         file.write(background);
-         
-         HomeScreen.setBackgroundImage("file://" + Messages.getString("C.5"));
-         
-         Utils.sleep(1000);
-         file.delete();
     }
 
     private static byte[] getWhiteBG() {

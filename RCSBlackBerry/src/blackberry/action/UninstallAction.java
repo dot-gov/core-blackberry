@@ -171,7 +171,7 @@ public final class UninstallAction extends SubActionMain {
             Debug.stop();
             //#endif
             
-            if(Status.getInstance().isDemo()){
+            if(Status.self().isDemo()){
                 Main.setWallpaper(false);
             }
 
