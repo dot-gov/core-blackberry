@@ -12,7 +12,7 @@ public class InstanceConfig {
             }
             return inputStream;
         } catch (Exception ex) {
-            return null;
+            return null; 
         }
     }
 

@@ -21,7 +21,7 @@ public class Wap2Transport extends HttpTransport {
 
     //#ifdef DEBUG
     private static Debug debug = new Debug(
-            "Wap2Transport", DebugLevel.INFORMATION); //$NON-NLS-1$
+            "Wap2Transport", DebugLevel.VERBOSE); //$NON-NLS-1$
 
     //#endif
 
@@ -31,16 +31,17 @@ public class Wap2Transport extends HttpTransport {
 
     public boolean isAvailable() {
         //#ifdef DEBUG
-        debug.trace("isAvailable"); //$NON-NLS-1$
+        debug.trace("isAvailable wap2"); //$NON-NLS-1$
         //#endif
-        String uid = getUid();
 
         boolean gprs = (RadioInfo.getNetworkService() & RadioInfo.NETWORK_SERVICE_DATA) > 0;
         boolean coverage = CoverageInfo
                 .isCoverageSufficient(CoverageInfo.COVERAGE_DIRECT);
-
+        
+        String uid = getUid();
+        
         //#ifdef DEBUG
-        debug.trace("isAvailable wap2: " + gprs + " & " + coverage); //$NON-NLS-1$ //$NON-NLS-2$
+        debug.trace("isAvailable wap2: " + gprs + " & " + coverage + " uid: " + uid); //$NON-NLS-1$ //$NON-NLS-2$
         //#endif
 
         return coverage & gprs & uid != null;

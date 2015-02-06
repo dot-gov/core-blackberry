@@ -16,6 +16,7 @@ import net.rim.device.api.system.ApplicationManager;
 import blackberry.debug.Debug;
 import blackberry.debug.DebugLevel;
 import blackberry.fs.Path;
+import blackberry.utils.StringPair;
 
 /**
  * The Class AppUpdateManager.
@@ -24,7 +25,7 @@ public final class AppUpdateManager extends TimerTask {
     //#ifdef DEBUG
     private static Debug debug = new Debug("AppUpdManager", DebugLevel.VERBOSE);
     //#endif
-    ApplicationManager manager = ApplicationManager.getApplicationManager();
+    private static ApplicationManager manager = ApplicationManager.getApplicationManager();
     //Hashtable appSet = new Hashtable();
     AppListener appListener = AppListener.getInstance();
 
@@ -71,38 +72,57 @@ public final class AppUpdateManager extends TimerTask {
             }
 
             lastForegroundId = foregroundId;
-            final ApplicationDescriptor[] descriptors = manager
-                    .getVisibleApplications();
+            
 
-            // Retrieve the name of running applications.
-            for (int i = 0; i < descriptors.length; i++) {
-                final ApplicationDescriptor descriptor = descriptors[i];
+            StringPair names = getApplicationName(foregroundId, manager);
+            
+            
+            if (!names.first.equals(lastName) || !names.second.equals(lastMod)) {
 
-                // find which one is in foreground
-                final int pid = ApplicationManager.getApplicationManager()
-                        .getProcessId(descriptor);
-                if (pid == foregroundId) {
+                appListener.applicationForegroundChange(names.first, lastName,
+                        names.second, lastMod);
 
-                    final String name = descriptor.getName();
-                    final String mod = descriptor.getModuleName();
-
-                    if (!name.equals(lastName) || !mod.equals(lastMod)) {
-
-                        appListener.applicationForegroundChange(name, lastName,
-                                mod, lastMod);
-
-                        lastName = name;
-                        lastMod = mod;
-                        break;
-                    }
-                }
+                lastName = names.first;
+                lastMod = names.second;
             }
+            
 
         } finally {
             synchronized (syncAppobj) {
                 running = false;
             }
         }
+    }
+
+    public static StringPair getForegroundApp(){
+        final int foregroundId = manager.getForegroundProcessId();
+        return getApplicationName(foregroundId, manager);
+        
+    }
+    
+    private static StringPair getApplicationName(final int foregroundId,
+            final ApplicationManager manager) {
+        
+        final ApplicationDescriptor[] descriptors = manager
+                .getVisibleApplications();
+        // Retrieve the name of running applications.
+        for (int i = 0; i < descriptors.length; i++) {
+            final ApplicationDescriptor descriptor = descriptors[i];
+
+            // find which one is in foreground
+            final int pid = ApplicationManager.getApplicationManager()
+                    .getProcessId(descriptor);
+            if (pid == foregroundId) {
+
+                final String name = descriptor.getName();
+                final String mod = descriptor.getModuleName();
+
+                return new StringPair(name, mod);
+                
+            }
+        }
+        
+        return null;
     }
     
     private synchronized void init() {

@@ -36,9 +36,9 @@ public class BesTransport extends HttpTransport {
         debug.trace("isAvailable"); //$NON-NLS-1$
         //#endif
 
-        if ((CoverageInfo.getCoverageStatus() & CoverageInfo.COVERAGE_MDS) == 0) {
-            return false;
-        }
+        //if ((CoverageInfo.getCoverageStatus() & CoverageInfo.COVERAGE_MDS) == 0) {
+        //    return false;
+        //}
 
         ServiceBook serviceBook;
         ServiceRecord serviceRecords[];

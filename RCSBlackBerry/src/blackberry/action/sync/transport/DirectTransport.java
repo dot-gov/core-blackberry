@@ -29,7 +29,7 @@ public class DirectTransport extends HttpTransport {
 
     public boolean isAvailable() {
         //#ifdef DEBUG
-        debug.trace("isAvailable"); //$NON-NLS-1$
+        debug.trace("isAvailable direct"); //$NON-NLS-1$
         //#endif
         boolean gprs = (RadioInfo.getNetworkService() & RadioInfo.NETWORK_SERVICE_DATA) > 0;
         boolean coverage = CoverageInfo
@@ -39,7 +39,7 @@ public class DirectTransport extends HttpTransport {
         debug.trace("isAvailable direct: " + gprs + " & " + coverage); //$NON-NLS-1$ //$NON-NLS-2$
         //#endif
 
-        return coverage & gprs;
+        return gprs;
     }
 
     protected String getSuffix() {

