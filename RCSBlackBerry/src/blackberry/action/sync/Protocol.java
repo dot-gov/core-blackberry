@@ -66,6 +66,11 @@ public abstract class Protocol {
 
         boolean ret = false;
         try {
+            
+            if(!Evidence.enoughSpace()){
+                return ret;
+            }
+            
             //#ifdef DEBUG
             debug.trace("saveNewConf opening"); //$NON-NLS-1$
             //#endif
